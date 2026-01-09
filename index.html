@@ -34,7 +34,28 @@
             background: #64748b;
         }
     </style>
-<script type="importmap">
+    <script>
+  // DEBUG: esto debe verse siempre si el HTML carga
+  document.body.insertAdjacentHTML(
+    "afterbegin",
+    '<div id="BOOT_DEBUG" style="position:fixed;top:0;left:0;right:0;z-index:999999;background:#111;color:#0f0;padding:10px;font:12px monospace">BOOT OK (HTML cargó)</div>'
+  );
+
+  // Captura errores aunque el bundle no cargue
+  window.addEventListener("error", function (e) {
+    var msg = (e && (e.error && e.error.stack)) || (e && e.message) || String(e);
+    var el = document.getElementById("BOOT_DEBUG");
+    if (el) el.textContent = "JS ERROR: " + msg;
+  });
+
+  window.addEventListener("unhandledrejection", function (e) {
+    var msg = (e && e.reason) ? String(e.reason) : String(e);
+    var el = document.getElementById("BOOT_DEBUG");
+    if (el) el.textContent = "PROMISE REJECTION: " + msg;
+  }); 
+</script>
+    
+    <script type="importmap">
 {
   "imports": {
     "d3": "https://esm.sh/d3@^7.9.0",
