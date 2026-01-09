@@ -2,10 +2,25 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { HarmonyExplanation, ProgressionSuggestion } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const getAI = () => {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  if (!apiKey) {
+    console.warn("Gemini API key no configurada");
+    return null;
+  }
+  return new GoogleGenAI({ apiKey });
+};
 
 export const getHarmonyExplanation = async (chord: string, key: string): Promise<HarmonyExplanation | null> => {
   try {
+    const ai = getAI();
+if (!ai) {
+  return {
+    analysis: "La IA no está configurada correctamente.",
+    commonUsage: "",
+    suggestedNext: [],
+  };
+}
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `Explica la función armónica del acorde ${chord} en el contexto de ${key}. Proporciona un análisis teórico, su uso común en la música popular y 3 acordes siguientes sugeridos con razones breves. TODO EL CONTENIDO DEBE ESTAR EN ESPAÑOL.`,
